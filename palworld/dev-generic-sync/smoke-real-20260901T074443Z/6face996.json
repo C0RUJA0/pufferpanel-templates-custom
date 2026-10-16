@@ -1,0 +1,118 @@
+{
+  "type": "palworld",
+  "id": "6face996",
+  "display": "Palworld Dedicated Server",
+  "data": {
+    "port": {
+      "type": "integer",
+      "value": 8211,
+      "display": "Game Port",
+      "desc": "UDP port used by the Palworld dedicated server.",
+      "required": true,
+      "userEdit": false
+    },
+    "BaseCampMaxNumInGuild": {
+      "type": "integer",
+      "value": 5,
+      "display": "Max Bases per Guild",
+      "desc": "Maximum number of bases allowed per guild.",
+      "required": true,
+      "userEdit": true
+    },
+    "bAllowGlobalPalboxExport": {
+      "type": "boolean",
+      "value": true,
+      "display": "Allow Global Palbox Export",
+      "desc": "Allow exporting Pals through the Global Palbox.",
+      "required": true,
+      "userEdit": true
+    },
+    "bAllowGlobalPalboxImport": {
+      "type": "boolean",
+      "value": true,
+      "display": "Allow Global Palbox Import",
+      "desc": "Allow importing Pals through the Global Palbox.",
+      "required": true,
+      "userEdit": true
+    },
+    "ExpRate": {
+      "type": "string",
+      "value": "2.5"
+    },
+    "PalSpawnNumRate": {
+      "type": "string",
+      "value": "1.25"
+    },
+    "PalEggDefaultHatchingTime": {
+      "type": "string",
+      "value": "0.5"
+    }
+  },
+  "install": [
+    {
+      "if": "env == 'host'",
+      "type": "steamgamedl",
+      "appId": "2394010"
+    },
+    {
+      "if": "env == 'docker'",
+      "type": "command",
+      "commands": [
+        "steamcmd +@sSteamCmdForcePlatformBitness 64 +force_install_dir /pufferpanel +login anonymous +app_update 2394010 validate +quit"
+      ]
+    },
+    {
+      "type": "command",
+      "commands": [
+        "chmod +x PalServer.sh"
+      ]
+    }
+  ],
+  "uninstall": null,
+  "run": {
+    "command": "sh -lc 'SOURCE=/pufferpanel/linux64/steamclient.so; DEST=/pufferpanel/Pal/Binaries/Linux/steamclient.so; CONFIG=/pufferpanel/Pal/Saved/Config/LinuxServer/PalWorldSettings.ini; DEFAULT=/pufferpanel/DefaultPalWorldSettings.ini; BASES=\"${BaseCampMaxNumInGuild}\"; EXPORT=\"${bAllowGlobalPalboxExport}\"; IMPORT=\"${bAllowGlobalPalboxImport}\"; case \"$BASES\" in \"\"|*[!0-9]*) echo \"Invalid BaseCampMaxNumInGuild: $BASES\" >&2; exit 1;; esac; case \"$EXPORT\" in true|True|1) EXPORT=True;; false|False|0) EXPORT=False;; *) echo \"Invalid bAllowGlobalPalboxExport: $EXPORT\" >&2; exit 1;; esac; case \"$IMPORT\" in true|True|1) IMPORT=True;; false|False|0) IMPORT=False;; *) echo \"Invalid bAllowGlobalPalboxImport: $IMPORT\" >&2; exit 1;; esac; if [ ! -f \"$DEST\" ]; then cp \"$SOURCE\" \"$DEST\" || exit 1; fi; chmod +x /pufferpanel/Pal/Binaries/Linux/PalServer-Linux-Shipping || exit 1; mkdir -p /pufferpanel/Pal/Saved/Config/LinuxServer || exit 1; chown 1000:1000 /pufferpanel/Pal/Saved /pufferpanel/Pal/Saved/Config /pufferpanel/Pal/Saved/Config/LinuxServer || exit 1; if [ ! -s \"$CONFIG\" ]; then cp \"$DEFAULT\" \"$CONFIG\" || exit 1; fi; grep -q \"^OptionSettings=(\" \"$CONFIG\" || { echo \"OptionSettings not found\" >&2; exit 1; }; sed -i -E \"s/BaseCampMaxNumInGuild=[0-9]+/BaseCampMaxNumInGuild=$BASES/\" \"$CONFIG\" || exit 1; if grep -q \"bAllowGlobalPalboxExport=\" \"$CONFIG\"; then sed -i -E \"s/bAllowGlobalPalboxExport=(True|False)/bAllowGlobalPalboxExport=$EXPORT/\" \"$CONFIG\" || exit 1; else sed -i \"/^OptionSettings=(/ s/)$/,bAllowGlobalPalboxExport=$EXPORT)/\" \"$CONFIG\" || exit 1; fi; if grep -q \"bAllowGlobalPalboxImport=\" \"$CONFIG\"; then sed -i -E \"s/bAllowGlobalPalboxImport=(True|False)/bAllowGlobalPalboxImport=$IMPORT/\" \"$CONFIG\" || exit 1; else sed -i \"/^OptionSettings=(/ s/)$/,bAllowGlobalPalboxImport=$IMPORT)/\" \"$CONFIG\" || exit 1; fi; chown 1000:1000 \"$CONFIG\" || exit 1; chmod 644 \"$CONFIG\" || exit 1; exec runuser -u ubuntu -- env HOME=/home/ubuntu /pufferpanel/Pal/Binaries/Linux/PalServer-Linux-Shipping Pal -port=${port}'",
+    "stopCode": 15,
+    "stdin": {
+      "type": "stdin"
+    },
+    "autostart": true,
+    "autorecover": false,
+    "autorestart": true
+  },
+  "environment": {
+    "type": "docker",
+    "bindings": {},
+    "containerRoot": "",
+    "image": "palworld-pufferpanel:steamcmd-xdg",
+    "networkName": "host",
+    "portBindings": [
+      "0.0.0.0:${port}:${port}/udp"
+    ]
+  },
+  "supportedEnvironments": [
+    {
+      "type": "host"
+    },
+    {
+      "type": "docker",
+      "image": "palworld-pufferpanel:steamcmd-xdg",
+      "portBindings": [
+        "0.0.0.0:${port}:${port}/udp"
+      ]
+    }
+  ],
+  "requirements": {
+    "os": "linux",
+    "arch": "amd64"
+  },
+  "stats": {
+    "type": ""
+  },
+  "query": {
+    "type": ""
+  },
+  "keepAlive": {
+    "frequency": "",
+    "command": ""
+  }
+}

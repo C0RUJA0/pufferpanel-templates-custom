@@ -1,0 +1,34 @@
+{
+  "schema": 1,
+  "server_id": "6face996",
+  "variables": {
+    "BaseCampMaxNumInGuild": {
+      "type": "integer",
+      "value": 5
+    },
+    "ExpRate": {
+      "type": "string",
+      "value": "2.5"
+    },
+    "PalEggDefaultHatchingTime": {
+      "type": "string",
+      "value": "0.5"
+    },
+    "PalSpawnNumRate": {
+      "type": "string",
+      "value": "1.25"
+    },
+    "bAllowGlobalPalboxExport": {
+      "type": "boolean",
+      "value": true
+    },
+    "bAllowGlobalPalboxImport": {
+      "type": "boolean",
+      "value": true
+    },
+    "port": {
+      "type": "integer",
+      "value": 8211
+    }
+  }
+}

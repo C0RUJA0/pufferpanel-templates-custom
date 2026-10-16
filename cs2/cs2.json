@@ -1,0 +1,126 @@
+{
+  "type": "cs2",
+  "display": "Counter-Strike 2 Dedicated Server",
+  "data": {
+    "gslt": {
+      "type": "string",
+      "value": "",
+      "display": "GSLT Token",
+      "desc": "Token em steamcommunity.com/dev/managegameservers (appid 730). Obrigatorio p/ internet publica.",
+      "required": false,
+      "userEdit": true
+    },
+    "port": {
+      "type": "integer",
+      "value": 27015,
+      "display": "Game Port",
+      "desc": "Porta UDP/TCP do servidor.",
+      "required": true,
+      "userEdit": false
+    },
+    "maxplayers": {
+      "type": "integer",
+      "value": 10,
+      "display": "Max Players",
+      "required": true,
+      "userEdit": true
+    },
+    "tickrate": {
+      "type": "integer",
+      "value": 64,
+      "display": "Tickrate",
+      "required": true,
+      "userEdit": true
+    },
+    "map_mode": {
+      "type": "option",
+      "value": "official",
+      "display": "Fonte do mapa",
+      "desc": "Como o mapa inicial e escolhido.",
+      "required": true,
+      "userEdit": true,
+      "options": [
+        { "value": "official", "display": "Mapa oficial (abaixo)" },
+        { "value": "workshop", "display": "Workshop: 1 mapa (ID abaixo)" },
+        { "value": "collection", "display": "Workshop: colecao (ID abaixo)" }
+      ]
+    },
+    "map": {
+      "type": "option",
+      "value": "de_dust2",
+      "display": "Mapa oficial",
+      "desc": "Usado quando 'Fonte do mapa' = oficial.",
+      "required": false,
+      "userEdit": true,
+      "options": [
+        { "value": "de_dust2", "display": "Dust II" },
+        { "value": "de_mirage", "display": "Mirage" },
+        { "value": "de_inferno", "display": "Inferno" },
+        { "value": "de_nuke", "display": "Nuke" },
+        { "value": "de_ancient", "display": "Ancient" },
+        { "value": "de_anubis", "display": "Anubis" }
+      ]
+    },
+    "workshop_map": {
+      "type": "string",
+      "value": "",
+      "display": "Workshop Map ID",
+      "desc": "ID numerico de 1 mapa. Usado quando 'Fonte do mapa' = workshop.",
+      "required": false,
+      "userEdit": true
+    },
+    "workshop_collection": {
+      "type": "string",
+      "value": "",
+      "display": "Workshop Collection ID",
+      "desc": "ID de colecao publica. Usado quando 'Fonte do mapa' = collection.",
+      "required": false,
+      "userEdit": true
+    },
+    "extra_args": {
+      "type": "string",
+      "value": "",
+      "display": "Args extras",
+      "required": false,
+      "userEdit": true
+    }
+  },
+  "install": [
+    { "if": "env == 'host'", "type": "steamgamedl", "appId": "730" },
+    {
+      "if": "env == 'docker'",
+      "type": "command",
+      "commands": [
+        "steamcmd +@sSteamCmdForcePlatformBitness 64 +force_install_dir /pufferpanel +login anonymous +app_update 730 validate +quit"
+      ]
+    },
+    {
+      "type": "writefile",
+      "target": "cs2-mapflag.sh",
+      "text": "#!/bin/sh\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then echo \"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then echo \"+host_workshop_map ${workshop_map}\"; else echo \"+map ${map}\"; fi\n"
+    },
+    { "type": "command", "commands": [ "chmod +x cs2-mapflag.sh" ] }
+  ],
+  "run": {
+    "command": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} +sv_setsteamaccount ${gslt} +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} -tickrate ${tickrate} $(sh cs2-mapflag.sh) ${extra_args}",
+    "stop": "quit",
+    "stdin": { "type": "stdin" },
+    "autostart": false,
+    "autorecover": false,
+    "autorestart": false,
+    "environmentVars": { "LD_LIBRARY_PATH": "./game/bin/linuxsteamrt64" }
+  },
+  "environment": { "type": "host" },
+  "supportedEnvironments": [
+    { "type": "host" },
+    {
+      "type": "docker",
+      "image": "cm2network/steamcmd:root",
+      "portBindings": [
+        "0.0.0.0:${port}:${port}/udp",
+        "0.0.0.0:${port}:${port}/tcp"
+      ]
+    }
+  ],
+  "requirements": { "os": "linux", "arch": "amd64" }
+}

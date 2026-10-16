@@ -1,0 +1,8 @@
+*/data.json
+.vscode/*
+.idea/*
+.github/*
+spec.json
+audit/*
+tests/*
+scripts/*

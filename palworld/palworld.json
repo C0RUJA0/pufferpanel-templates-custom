@@ -1,0 +1,87 @@
+{
+  "type": "palworld",
+  "display": "Palworld Dedicated Server",
+  "data": {
+    "port": {
+      "type": "integer",
+      "value": 8211,
+      "display": "Game Port",
+      "desc": "UDP port used by the Palworld dedicated server.",
+      "required": true,
+      "userEdit": false
+    },
+    "BaseCampMaxNumInGuild": {
+      "type": "integer",
+      "value": 5,
+      "display": "Max Bases per Guild",
+      "desc": "Maximum number of bases allowed per guild.",
+      "required": true,
+      "userEdit": true
+    },
+    "bAllowGlobalPalboxExport": {
+      "type": "boolean",
+      "value": true,
+      "display": "Allow Global Palbox Export",
+      "desc": "Allow exporting Pals through the Global Palbox.",
+      "required": true,
+      "userEdit": true
+    },
+    "bAllowGlobalPalboxImport": {
+      "type": "boolean",
+      "value": true,
+      "display": "Allow Global Palbox Import",
+      "desc": "Allow importing Pals through the Global Palbox.",
+      "required": true,
+      "userEdit": true
+    }
+  },
+  "install": [
+    {
+      "if": "env == 'host'",
+      "type": "steamgamedl",
+      "appId": "2394010"
+    },
+    {
+      "if": "env == 'docker'",
+      "type": "command",
+      "commands": [
+        "steamcmd +@sSteamCmdForcePlatformBitness 64 +force_install_dir /pufferpanel +login anonymous +app_update 2394010 validate +quit"
+      ]
+    },
+    {
+      "type": "command",
+      "commands": [
+        "chmod +x PalServer.sh"
+      ]
+    }
+  ],
+  "run": {
+    "command": "/usr/local/bin/palworld-start-wrapper ${port}",
+    "stopCode": 15,
+    "stdin": {
+      "type": "stdin"
+    },
+    "autostart": false,
+    "autorecover": false,
+    "autorestart": false
+  },
+  "environment": {
+    "type": "host"
+  },
+  "supportedEnvironments": [
+    {
+      "type": "host"
+    },
+    {
+      "type": "docker",
+      "image": "palworld-pufferpanel:steamcmd-xdg-generic",
+      "portBindings": [
+        "0.0.0.0:${port}:${port}/udp"
+      ]
+    }
+  ],
+  "requirements": {
+    "os": "linux",
+    "arch": "amd64"
+  }
+}

@@ -1,0 +1,17 @@
+[Unit]
+Description=Mirror PufferPanel Palworld variables
+ConditionPathIsDirectory=/var/lib/casaos/apps/pufferpanel/data/servers
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/libexec/palworld-vars-mirror.py --servers-dir /var/lib/casaos/apps/pufferpanel/data/servers
+
+User=root
+Group=root
+UMask=0022
+
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=read-only
+ReadWritePaths=/var/lib/casaos/apps/pufferpanel/data/servers

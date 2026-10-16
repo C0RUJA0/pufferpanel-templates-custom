@@ -1,0 +1,9 @@
+[Unit]
+Description=Watch PufferPanel server definitions for Palworld variable changes
+
+[Path]
+PathModified=/var/lib/casaos/apps/pufferpanel/data/servers
+Unit=pufferpanel-palworld-vars-mirror.service
+
+[Install]
+WantedBy=paths.target

@@ -1,0 +1,9 @@
+#!/bin/sh
+{
+    echo "FAKE_GAME_UID=$(id -u)"
+    echo "FAKE_GAME_GID=$(id -g)"
+    echo "FAKE_GAME_HOME=$HOME"
+    echo "FAKE_GAME_ARGS=$*"
+} > /pufferpanel/fake-game-result.txt
+
+exit 0

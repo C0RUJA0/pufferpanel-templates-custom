@@ -1,0 +1,553 @@
+[
+  {
+    "slug": "palworld",
+    "display": "Palworld",
+    "genre": "Survival / Crafting",
+    "selectionReason": "Popular multiplayer survival game with an officially supported native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "2394010",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./PalServer.sh -port=${port}",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 8211,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "Pal/Saved"
+    ],
+    "officialSources": [
+      "https://docs.palworldgame.com/0.5.0/getting-started/deploy-dedicated-server/",
+      "https://docs.palworldgame.com/settings-and-operation/arguments/",
+      "https://docs.palworldgame.com/0.5.0/getting-started/requirements/",
+      "https://github.com/pocketpairjp/palworld-dedicated-server-docker"
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "dayz",
+    "display": "DayZ",
+    "genre": "Survival",
+    "selectionReason": "Popular hardcore survival game with an officially supported native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "223350",
+    "linuxNative": true,
+    "installAuth": "steam-account",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./DayZServer -config=serverDZ.cfg -port=${port} -BEpath=battleye -profiles=profiles -dologs -adminlog -netlog -freezecheck",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 2302,
+        "required": true
+      },
+      {
+        "name": "client",
+        "protocol": "udp",
+        "default": 2304,
+        "required": true
+      },
+      {
+        "name": "steam-query",
+        "protocol": "udp",
+        "default": 2305,
+        "required": true
+      }
+    ],
+    "credentialInputs": [
+      "steamUsername",
+      "steamPassword"
+    ],
+    "persistentPaths": [
+      "profiles",
+      "mpmissions",
+      "serverDZ.cfg"
+    ],
+    "officialSources": [
+      "https://community.bistudio.com/wiki/DayZ:Hosting_a_Linux_Server",
+      "https://community.bistudio.com/wiki/DayZ:Server_Configuration",
+      "https://community.bistudio.com/wiki/DayZ:Server_Requirements"
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "arma-reforger",
+    "display": "Arma Reforger",
+    "genre": "Military Simulation",
+    "selectionReason": "Popular multiplayer military sandbox with an officially supported native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "1874900",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./ArmaReforgerServer -config ./config.json -maxFPS 60",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 2001,
+        "required": true
+      },
+      {
+        "name": "a2s",
+        "protocol": "udp",
+        "default": 17777,
+        "required": false
+      },
+      {
+        "name": "rcon",
+        "protocol": "udp",
+        "default": 19999,
+        "required": false
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "config.json"
+    ],
+    "officialSources": [
+      "https://community.bohemia.net/wiki/Arma_Reforger:Server_Hosting",
+      "https://community.bohemia.net/wiki/Arma_Reforger:Server_Config",
+      "https://community.bohemia.net/wiki/Arma_Reforger:Startup_Parameters"
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "fivem",
+    "display": "FiveM",
+    "genre": "Roleplay / Open World",
+    "selectionReason": "Highly popular GTA V multiplayer and roleplay platform with an officially documented Linux FXServer.",
+    "distribution": "cfx-artifact",
+    "appId": null,
+    "linuxNative": true,
+    "installAuth": "none",
+    "runtimeImage": "debian:bookworm-slim",
+    "startCommand": "cd server-data && bash ../server/run.sh +exec server.cfg",
+    "ports": [
+      {
+        "name": "game-tcp",
+        "protocol": "tcp",
+        "default": 30120,
+        "required": true
+      },
+      {
+        "name": "game-udp",
+        "protocol": "udp",
+        "default": 30120,
+        "required": true
+      }
+    ],
+    "credentialInputs": [
+      "cfxLicenseKey"
+    ],
+    "persistentPaths": [
+      "server-data"
+    ],
+    "officialSources": [
+      "https://docs.fivem.net/docs/server-manual/setting-up-a-server/",
+      "https://docs.fivem.net/docs/server-manual/setting-up-a-server-vanilla/",
+      "https://docs.fivem.net/docs/resources/txAdmin/"
+    ],
+    "auditNotes": [
+      "Linux FXServer requires git and xz/xz-utils during installation.",
+      "A valid Cfx.re server license key is required.",
+      "The template will use vanilla FXServer rather than embedding txAdmin configuration."
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "beammp",
+    "display": "BeamMP",
+    "genre": "Driving / Multiplayer",
+    "selectionReason": "Popular BeamNG.drive multiplayer platform with an officially supported native Linux server.",
+    "distribution": "github-release",
+    "appId": null,
+    "linuxNative": true,
+    "installAuth": "none",
+    "runtimeImage": "debian:bookworm-slim",
+    "startCommand": "./BeamMP-Server",
+    "ports": [
+      {
+        "name": "game-tcp",
+        "protocol": "tcp",
+        "default": 30814,
+        "required": true
+      },
+      {
+        "name": "game-udp",
+        "protocol": "udp",
+        "default": 30814,
+        "required": true
+      }
+    ],
+    "credentialInputs": [
+      "authKey"
+    ],
+    "persistentPaths": [
+      "ServerConfig.toml",
+      "Resources"
+    ],
+    "officialSources": [
+      "https://docs.beammp.com/server/create-a-server/",
+      "https://docs.beammp.com/server/server-maintenance/",
+      "https://github.com/BeamMP/BeamMP-Server/releases"
+    ],
+    "auditNotes": [
+      "Installer will download the current official Linux release and normalize the executable name to BeamMP-Server.",
+      "AuthKey must never be committed to the template repository.",
+      "Both TCP and UDP must be published for the configured server port."
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "mindustry",
+    "display": "Mindustry",
+    "genre": "Tower Defense / RTS / Automation",
+    "selectionReason": "Popular multiplayer automation and tower-defense game with an official cross-platform headless dedicated server.",
+    "distribution": "github-release",
+    "appId": null,
+    "linuxNative": true,
+    "installAuth": "none",
+    "runtimeImage": "eclipse-temurin:17",
+    "startCommand": "java -jar server-release.jar",
+    "ports": [
+      {
+        "name": "game-tcp",
+        "protocol": "tcp",
+        "default": 6567,
+        "required": true
+      },
+      {
+        "name": "game-udp",
+        "protocol": "udp",
+        "default": 6567,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "."
+    ],
+    "officialSources": [
+      "https://mindustrygame.github.io/wiki/servers/",
+      "https://github.com/Anuken/Mindustry",
+      "https://github.com/Anuken/Mindustry/releases"
+    ],
+    "auditNotes": [
+      "Official server releases provide server-release.jar.",
+      "Java 17 is the supported Java baseline documented by the upstream project.",
+      "PufferPanel will preserve the server working directory, including saves, configuration, maps and mods."
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "barotrauma",
+    "display": "Barotrauma",
+    "genre": "Co-op / Survival / Simulation",
+    "selectionReason": "Popular cooperative submarine survival game with an official Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "1026340",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./DedicatedServer",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 27015,
+        "required": true
+      },
+      {
+        "name": "query",
+        "protocol": "udp",
+        "default": 27016,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "serversettings.xml",
+      "clientpermissions.xml",
+      "Data"
+    ],
+    "officialSources": [
+      "https://barotraumagame.com/wiki/Hosting_a_Dedicated_Server",
+      "https://barotraumagame.com/wiki/Serversettings.xml"
+    ],
+    "auditNotes": [
+      "The official hosting wiki confirms SteamCMD app 1026340 and Linux DedicatedServer.",
+      "Default game and query ports are 27015/udp and 27016/udp.",
+      "The official wiki marks parts of the Linux guide as potentially outdated, so runtime dependencies must be revalidated during canary testing."
+    ],
+    "auditStatus": "pass-with-runtime-verification"
+  },
+  {
+    "slug": "left-4-dead-2",
+    "display": "Left 4 Dead 2",
+    "genre": "Co-op FPS / Zombies",
+    "selectionReason": "Popular cooperative shooter with a native Linux Source Dedicated Server.",
+    "distribution": "steamcmd",
+    "appId": "222860",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./srcds_run -game left4dead2 -console -port ${port} +map c1m1_hotel",
+    "ports": [
+      {
+        "name": "game-tcp",
+        "protocol": "tcp",
+        "default": 27015,
+        "required": true
+      },
+      {
+        "name": "game-udp",
+        "protocol": "udp",
+        "default": 27015,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "left4dead2/cfg",
+      "left4dead2/addons",
+      "left4dead2/maps"
+    ],
+    "officialSources": [
+      "https://developer.valvesoftware.com/wiki/Source_Dedicated_Server",
+      "https://developer.valvesoftware.com/wiki/Command_line_options_(Source_Dedicated_Server)",
+      "https://developer.valvesoftware.com/wiki/Left_4_Dead_(engine_branch)"
+    ],
+    "auditNotes": [
+      "SteamCMD app_info_print 222860 was verified locally and reports Left 4 Dead 2 Dedicated Server with Linux content.",
+      "Anonymous installation will be verified during template canary installation.",
+      "Default startup map is c1m1_hotel and can later be exposed as a PufferPanel variable."
+    ],
+    "auditStatus": "pass-with-install-verification"
+  },
+  {
+    "slug": "core-keeper",
+    "display": "Core Keeper",
+    "genre": "Sandbox / Survival / Action RPG",
+    "selectionReason": "Popular cooperative sandbox game with a native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "1963720",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./launch.sh -port ${port}",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 27015,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      ".config/unity3d/Pugstorm/Core Keeper/DedicatedServer"
+    ],
+    "officialSources": [
+      "https://corekeeper.atma.gg/en/How_to_setup_a_dedicated_server",
+      "https://corekeeper.atma.gg/en/Save_data"
+    ],
+    "auditNotes": [
+      "Steam metadata confirms Linux launch via launch.sh.",
+      "SteamCMD installation uses app 1963720 with anonymous login.",
+      "Port behavior will be verified during the runtime canary before final template publication."
+    ],
+    "auditStatus": "pass-with-runtime-verification"
+  },
+  {
+    "slug": "counter-strike-2",
+    "display": "Counter-Strike 2",
+    "genre": "Competitive FPS",
+    "selectionReason": "Extremely popular competitive FPS with native Linux content and dedicated server capability.",
+    "distribution": "steamcmd",
+    "appId": "730",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} +game_type 0 +game_mode 1 +map de_dust2",
+    "ports": [
+      {
+        "name": "game-tcp",
+        "protocol": "tcp",
+        "default": 27015,
+        "required": true
+      },
+      {
+        "name": "game-udp",
+        "protocol": "udp",
+        "default": 27015,
+        "required": true
+      }
+    ],
+    "credentialInputs": [
+      "gslt"
+    ],
+    "persistentPaths": [
+      "game/csgo/cfg",
+      "game/csgo/addons"
+    ],
+    "officialSources": [
+      "https://developer.valvesoftware.com/wiki/Counter-Strike_2/Dedicated_Servers",
+      "https://developer.valvesoftware.com/wiki/SteamCMD",
+      "https://developer.valvesoftware.com/wiki/Source_Dedicated_Server"
+    ],
+    "auditNotes": [
+      "Steam app_info_print 730 was verified locally on 2026-08-16.",
+      "Steam metadata reports Counter-Strike 2 with native Linux content.",
+      "Steam metadata reports the Linux client launcher as game/cs2.sh.",
+      "Dedicated server executable, anonymous app_update 730 and GSLT behavior will be verified during canary installation.",
+      "Primary server port is provisioned as both TCP and UDP."
+    ],
+    "auditStatus": "pass-with-install-runtime-verification"
+  },
+  {
+    "slug": "necesse",
+    "display": "Necesse",
+    "genre": "Sandbox / Survival / Action RPG",
+    "selectionReason": "Popular cooperative sandbox game with an officially supported native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "1169370",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./StartServer-nogui.sh -localdir -world ${world} -port ${port}",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 14159,
+        "required": true
+      }
+    ],
+    "credentialInputs": [],
+    "persistentPaths": [
+      "cfg",
+      "saves",
+      "logs",
+      "mods"
+    ],
+    "officialSources": [
+      "https://www.necessegame.com/server",
+      "https://necessewiki.com/Multiplayer-Linux",
+      "https://necessewiki.com/Multiplayer"
+    ],
+    "auditNotes": [
+      "SteamCMD anonymous installation uses app 1169370.",
+      "Official Linux startup script is StartServer-nogui.sh.",
+      "The -localdir parameter keeps configuration, saves and logs inside the PufferPanel server directory.",
+      "Default game port is 14159/udp."
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "dont-starve-together",
+    "display": "Don't Starve Together",
+    "genre": "Survival / Co-op",
+    "selectionReason": "Popular cooperative survival game with an official native Linux dedicated server.",
+    "distribution": "steamcmd",
+    "appId": "343050",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./run-dedicated-server.sh",
+    "ports": [
+      {
+        "name": "master",
+        "protocol": "udp",
+        "default": 10999,
+        "required": true
+      },
+      {
+        "name": "caves",
+        "protocol": "udp",
+        "default": 11000,
+        "required": true
+      }
+    ],
+    "credentialInputs": [
+      "clusterTokenFile"
+    ],
+    "persistentPaths": [
+      "storage/DoNotStarveTogether"
+    ],
+    "officialSources": [
+      "https://forums.kleientertainment.com/forums/topic/140715-2022-updated-dedicated-server-quick-setup-guide-linux/",
+      "https://forums.kleientertainment.com/forums/topic/64552-dedicated-server-settings-guide/",
+      "https://forums.kleientertainment.com/forums/topic/64743-dedicated-server-command-line-options-guide/"
+    ],
+    "auditNotes": [
+      "Steam app_info_print 343050 was verified locally and reports Linux 64-bit content.",
+      "SteamCMD anonymous installation is officially documented.",
+      "The final template will launch Master and Caves shards from a wrapper script.",
+      "Master will use 10999/udp and Caves 11000/udp.",
+      "Klei cluster_token.txt must be supplied by the server owner and must never be committed to this repository.",
+      "Persistent storage will be redirected inside the PufferPanel server directory."
+    ],
+    "auditStatus": "pass"
+  },
+  {
+    "slug": "soulmask",
+    "display": "Soulmask",
+    "genre": "Survival / Crafting",
+    "selectionReason": "Popular multiplayer survival game with a dedicated native Linux server.",
+    "distribution": "steamcmd",
+    "appId": "3017300",
+    "linuxNative": true,
+    "installAuth": "anonymous",
+    "runtimeImage": "steamcmd/steamcmd",
+    "startCommand": "./WSServer.sh Level01_Main -server -log -forcepassthrough -UTF8Output -SteamServerName='${serverName}' -MaxPlayers=${maxPlayers} -PSW='${password}' -adminpsw='${adminPassword}' -MULTIHOME=0.0.0.0 -Port=${port} -QueryPort=${queryPort} -EchoPort=${echoPort}",
+    "ports": [
+      {
+        "name": "game",
+        "protocol": "udp",
+        "default": 8777,
+        "required": true
+      },
+      {
+        "name": "steam-query",
+        "protocol": "udp",
+        "default": 27015,
+        "required": true
+      },
+      {
+        "name": "echo-local",
+        "protocol": "tcp",
+        "default": 18888,
+        "required": false,
+        "publishExternally": false
+      }
+    ],
+    "credentialInputs": [
+      "password",
+      "adminPassword"
+    ],
+    "persistentPaths": [
+      "WS/Saved"
+    ],
+    "officialSources": [
+      "https://soulmask.fandom.com/wiki/Private_Server",
+      "https://steamdb.info/app/3017300/config/"
+    ],
+    "auditNotes": [
+      "Steam app 3017300 was verified locally as Soulmask Dedicated Server For Linux.",
+      "Anonymous SteamCMD installation was tested successfully on 2026-08-16.",
+      "Installed size during audit was approximately 2.1 GB.",
+      "WSServer.sh was verified and launches WS/Binaries/Linux/WSServer-Linux-Shipping.",
+      "Game and Steam query ports are UDP.",
+      "Echo port 18888/tcp is intended for local server maintenance and should not be exposed publicly."
+    ],
+    "auditStatus": "pass"
+  }
+]
