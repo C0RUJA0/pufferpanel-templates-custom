@@ -96,16 +96,22 @@
     }
   },
   "install": [
-    { "type": "steamgamedl", "appId": "730" },
+    { "if": "env == 'host'", "type": "steamgamedl", "appId": "730" },
+    {
+      "if": "env == 'docker'",
+      "type": "writefile",
+      "target": "install-game.sh",
+      "text": "#!/bin/sh\nset -e\nSTEAMCMD=/home/steam/steamcmd/steamcmd.sh\n[ -x \"$STEAMCMD\" ] || STEAMCMD=steamcmd\n\"$STEAMCMD\" +force_install_dir \"$(pwd)\" +login anonymous +app_update 730 validate +quit\n"
+    },
+    { "if": "env == 'docker'", "type": "command", "commands": [ "sh install-game.sh" ] },
     {
       "type": "writefile",
-      "target": "cs2-mapflag.sh",
-      "text": "#!/bin/sh\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then echo \"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then echo \"+host_workshop_map ${workshop_map}\"; else echo \"+map ${map}\"; fi\n"
-    },
-    { "type": "command", "commands": [ "chmod +x cs2-mapflag.sh" ] }
+      "target": "cs2-start.sh",
+      "text": "#!/bin/sh\nMAPFLAG=\"+map ${map}\"\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then MAPFLAG=\"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then MAPFLAG=\"+host_workshop_map ${workshop_map}\"; fi\nGSLT=\"\"\n[ -n \"${gslt}\" ] && GSLT=\"+sv_setsteamaccount ${gslt}\"\nSVPW=\"\"\n[ -n \"${sv_password}\" ] && SVPW=\"+sv_password ${sv_password}\"\nRCON=\"\"\n[ -n \"${rcon_password}\" ] && RCON=\"+rcon_password ${rcon_password}\"\nexec ./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} $GSLT +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} $SVPW $RCON +bot_quota 0 $MAPFLAG ${extra_args}\n"
+    }
   ],
   "run": {
-    "command": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} +sv_setsteamaccount ${gslt} +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} +sv_password ${sv_password} +rcon_password ${rcon_password} +bot_quota 0 $(sh cs2-mapflag.sh) ${extra_args}",
+    "command": "sh cs2-start.sh",
     "stop": "quit",
     "stdin": { "type": "stdin" },
     "autostart": false,
