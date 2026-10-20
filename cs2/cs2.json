@@ -16,13 +16,30 @@
       "display": "Game Port",
       "desc": "Porta UDP/TCP do servidor.",
       "required": true,
-      "userEdit": false
+      "userEdit": true
     },
     "maxplayers": {
       "type": "integer",
       "value": 10,
       "display": "Max Players",
+      "desc": "Numero de vagas (-maxplayers_override + sv_visiblemaxplayers).",
       "required": true,
+      "userEdit": true
+    },
+    "sv_password": {
+      "type": "string",
+      "value": "",
+      "display": "Senha do server",
+      "desc": "Senha de entrada. Vazio = server aberto.",
+      "required": false,
+      "userEdit": true
+    },
+    "rcon_password": {
+      "type": "string",
+      "value": "",
+      "display": "RCON Password",
+      "desc": "Admin remoto via RCON. Vazio = RCON desabilitado.",
+      "required": false,
       "userEdit": true
     },
     "map_mode": {
@@ -95,7 +112,7 @@
     { "type": "command", "commands": [ "chmod +x cs2-mapflag.sh" ] }
   ],
   "run": {
-    "command": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} +sv_setsteamaccount ${gslt} +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} $(sh cs2-mapflag.sh) ${extra_args}",
+    "command": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} +sv_setsteamaccount ${gslt} +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} +sv_password ${sv_password} +rcon_password ${rcon_password} +bot_quota 0 $(sh cs2-mapflag.sh) ${extra_args}",
     "stop": "quit",
     "stdin": { "type": "stdin" },
     "autostart": false,
