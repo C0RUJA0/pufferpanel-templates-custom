@@ -136,7 +136,7 @@
     { "type": "host" },
     {
       "type": "docker",
-      "image": "cm2network/steamcmd:root"
+      "image": "cs2-pufferpanel:latest"
     }
   ],
   "requirements": { "os": "linux", "arch": "amd64" }
