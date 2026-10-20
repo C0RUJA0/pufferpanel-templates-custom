@@ -118,11 +118,7 @@
     { "type": "host" },
     {
       "type": "docker",
-      "image": "cm2network/steamcmd:root",
-      "portBindings": [
-        "0.0.0.0:${port}:${port}/udp",
-        "0.0.0.0:${port}:${port}/tcp"
-      ]
+      "image": "cm2network/steamcmd:root"
     }
   ],
   "requirements": { "os": "linux", "arch": "amd64" }
