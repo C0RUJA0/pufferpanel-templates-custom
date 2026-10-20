@@ -1,0 +1,148 @@
+{
+  "type": "cs2-plugins",
+  "display": "Counter-Strike 2 + CounterStrikeSharp (plugins)",
+  "data": {
+    "gslt": {
+      "type": "string",
+      "value": "",
+      "display": "GSLT Token",
+      "desc": "Token em steamcommunity.com/dev/managegameservers (appid 730). Obrigatorio p/ internet publica.",
+      "required": false,
+      "userEdit": true
+    },
+    "port": {
+      "type": "integer",
+      "value": 27015,
+      "display": "Game Port",
+      "desc": "Porta UDP/TCP do servidor.",
+      "required": true,
+      "userEdit": true
+    },
+    "maxplayers": {
+      "type": "integer",
+      "value": 10,
+      "display": "Max Players",
+      "desc": "Numero de vagas (-maxplayers_override + sv_visiblemaxplayers).",
+      "required": true,
+      "userEdit": true
+    },
+    "sv_password": {
+      "type": "string",
+      "value": "",
+      "display": "Senha do server",
+      "desc": "Senha de entrada. Vazio = server aberto.",
+      "required": false,
+      "userEdit": true
+    },
+    "rcon_password": {
+      "type": "string",
+      "value": "",
+      "display": "RCON Password",
+      "desc": "Admin remoto via RCON. Vazio = RCON desabilitado.",
+      "required": false,
+      "userEdit": true
+    },
+    "map_mode": {
+      "type": "option",
+      "value": "official",
+      "display": "Fonte do mapa",
+      "desc": "Como o mapa inicial e escolhido.",
+      "required": true,
+      "userEdit": true,
+      "options": [
+        { "value": "official", "display": "Mapa oficial (abaixo)" },
+        { "value": "workshop", "display": "Workshop: 1 mapa (ID abaixo)" },
+        { "value": "collection", "display": "Workshop: colecao (ID abaixo)" }
+      ]
+    },
+    "map": {
+      "type": "option",
+      "value": "de_dust2",
+      "display": "Mapa oficial",
+      "desc": "Usado quando 'Fonte do mapa' = oficial.",
+      "required": false,
+      "userEdit": true,
+      "options": [
+        { "value": "de_dust2", "display": "Dust II" },
+        { "value": "de_mirage", "display": "Mirage" },
+        { "value": "de_inferno", "display": "Inferno" },
+        { "value": "de_nuke", "display": "Nuke" },
+        { "value": "de_ancient", "display": "Ancient" },
+        { "value": "de_anubis", "display": "Anubis" }
+      ]
+    },
+    "workshop_map": {
+      "type": "string",
+      "value": "",
+      "display": "Workshop Map ID",
+      "desc": "ID numerico de 1 mapa. Usado quando 'Fonte do mapa' = workshop.",
+      "required": false,
+      "userEdit": true
+    },
+    "workshop_collection": {
+      "type": "string",
+      "value": "",
+      "display": "Workshop Collection ID",
+      "desc": "ID de colecao publica. Usado quando 'Fonte do mapa' = collection.",
+      "required": false,
+      "userEdit": true
+    },
+    "extra_args": {
+      "type": "string",
+      "value": "",
+      "display": "Args extras",
+      "required": false,
+      "userEdit": true
+    }
+  },
+  "install": [
+    { "if": "env == 'host'", "type": "steamgamedl", "appId": "730" },
+    {
+      "if": "env == 'docker'",
+      "type": "command",
+      "commands": [
+        "steamcmd +@sSteamCmdForcePlatformBitness 64 +force_install_dir /pufferpanel +login anonymous +app_update 730 validate +quit"
+      ]
+    },
+    {
+      "type": "writefile",
+      "target": "cs2-mapflag.sh",
+      "text": "#!/bin/sh\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then echo \"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then echo \"+host_workshop_map ${workshop_map}\"; else echo \"+map ${map}\"; fi\n"
+    },
+    { "type": "command", "commands": [ "chmod +x cs2-mapflag.sh" ] },
+    {
+      "type": "writefile",
+      "target": "install-plugins.sh",
+      "text": "#!/bin/sh\nset -e\nMM=$(curl -s https://mms.alliedmods.net/mmsdrop/2.0/mmsource-latest-linux)\ncurl -sL -o /tmp/mm.tar.gz https://mms.alliedmods.net/mmsdrop/2.0/$MM\ntar -xzf /tmp/mm.tar.gz -C game/csgo\nrm -f /tmp/mm.tar.gz\nU=$(curl -s https://api.github.com/repos/roflmuffin/CounterStrikeSharp/releases/latest | grep -oE 'https://[^[:space:]]+with-runtime-linux[^[:space:]]*\\.zip' | head -1)\ncurl -sL -o /tmp/css.zip \"$U\"\nunzip -o /tmp/css.zip -d game/csgo\nrm -f /tmp/css.zip\n"
+    },
+    { "type": "command", "commands": [ "sh install-plugins.sh" ] },
+    {
+      "type": "alterfile",
+      "file": "game/csgo/gameinfo.gi",
+      "search": "Game_LowViolence\tcsgo_lv",
+      "replace": "Game_LowViolence\tcsgo_lv\n\t\t\tGame\tcsgo/addons/metamod"
+    }
+  ],
+  "run": {
+    "command": "./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} +sv_setsteamaccount ${gslt} +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} +sv_password ${sv_password} +rcon_password ${rcon_password} +bot_quota 0 $(sh cs2-mapflag.sh) ${extra_args}",
+    "stop": "quit",
+    "stdin": { "type": "stdin" },
+    "autostart": false,
+    "autorecover": false,
+    "autorestart": false,
+    "environmentVars": { "LD_LIBRARY_PATH": "./game/bin/linuxsteamrt64" }
+  },
+  "environment": { "type": "host" },
+  "supportedEnvironments": [
+    { "type": "host" },
+    {
+      "type": "docker",
+      "image": "cm2network/steamcmd:root",
+      "portBindings": [
+        "0.0.0.0:${port}:${port}/udp",
+        "0.0.0.0:${port}:${port}/tcp"
+      ]
+    }
+  ],
+  "requirements": { "os": "linux", "arch": "amd64", "binaries": [ "curl", "tar", "unzip" ] }
+}
