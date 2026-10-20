@@ -96,14 +96,7 @@
     }
   },
   "install": [
-    { "if": "env == 'host'", "type": "steamgamedl", "appId": "730" },
-    {
-      "if": "env == 'docker'",
-      "type": "command",
-      "commands": [
-        "steamcmd +@sSteamCmdForcePlatformBitness 64 +force_install_dir /pufferpanel +login anonymous +app_update 730 validate +quit"
-      ]
-    },
+    { "type": "steamgamedl", "appId": "730" },
     {
       "type": "writefile",
       "target": "cs2-mapflag.sh",
