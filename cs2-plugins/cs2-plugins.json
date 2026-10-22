@@ -50,9 +50,18 @@
       "required": true,
       "userEdit": true,
       "options": [
-        { "value": "official", "display": "Mapa oficial (abaixo)" },
-        { "value": "workshop", "display": "Workshop: 1 mapa (ID abaixo)" },
-        { "value": "collection", "display": "Workshop: colecao (ID abaixo)" }
+        {
+          "value": "official",
+          "display": "Mapa oficial (abaixo)"
+        },
+        {
+          "value": "workshop",
+          "display": "Workshop: 1 mapa (ID abaixo)"
+        },
+        {
+          "value": "collection",
+          "display": "Workshop: colecao (ID abaixo)"
+        }
       ]
     },
     "map": {
@@ -63,12 +72,30 @@
       "required": false,
       "userEdit": true,
       "options": [
-        { "value": "de_dust2", "display": "Dust II" },
-        { "value": "de_mirage", "display": "Mirage" },
-        { "value": "de_inferno", "display": "Inferno" },
-        { "value": "de_nuke", "display": "Nuke" },
-        { "value": "de_ancient", "display": "Ancient" },
-        { "value": "de_anubis", "display": "Anubis" }
+        {
+          "value": "de_dust2",
+          "display": "Dust II"
+        },
+        {
+          "value": "de_mirage",
+          "display": "Mirage"
+        },
+        {
+          "value": "de_inferno",
+          "display": "Inferno"
+        },
+        {
+          "value": "de_nuke",
+          "display": "Nuke"
+        },
+        {
+          "value": "de_ancient",
+          "display": "Ancient"
+        },
+        {
+          "value": "de_anubis",
+          "display": "Anubis"
+        }
       ]
     },
     "workshop_map": {
@@ -96,20 +123,35 @@
     }
   },
   "install": [
-    { "if": "env == 'host'", "type": "steamgamedl", "appId": "730" },
+    {
+      "if": "env == 'host'",
+      "type": "steamgamedl",
+      "appId": "730"
+    },
     {
       "if": "env == 'docker'",
       "type": "writefile",
       "target": "install-game.sh",
-      "text": "#!/bin/sh\nset -e\nSTEAMCMD=/home/steam/steamcmd/steamcmd.sh\n[ -x \"$STEAMCMD\" ] || STEAMCMD=steamcmd\n\"$STEAMCMD\" +force_install_dir \"$(pwd)\" +login anonymous +app_update 730 validate +quit\n"
+      "text": "#!/bin/sh\nset -e\nchown -R 1000:1000 \"$(pwd)\"\nSTEAMCMD=/home/steam/steamcmd/steamcmd.sh\n[ -x \"$STEAMCMD\" ] || STEAMCMD=steamcmd\nexport HOME=/home/steam\nsetpriv --reuid=1000 --regid=1000 --init-groups \"$STEAMCMD\" +force_install_dir \"$(pwd)\" +login anonymous +app_update 730 validate +quit\n"
     },
-    { "if": "env == 'docker'", "type": "command", "commands": [ "sh install-game.sh" ] },
+    {
+      "if": "env == 'docker'",
+      "type": "command",
+      "commands": [
+        "sh install-game.sh"
+      ]
+    },
     {
       "type": "writefile",
       "target": "install-plugins.sh",
-      "text": "#!/bin/sh\nset -e\nneed=\"\"\nfor b in curl tar unzip; do command -v \"$b\" >/dev/null 2>&1 || need=\"$need $b\"; done\nif [ -n \"$need\" ]; then if command -v apt-get >/dev/null 2>&1; then apt-get update && apt-get install -y $need; elif command -v apk >/dev/null 2>&1; then apk add --no-cache $need; fi; fi\nMM=$(curl -s https://mms.alliedmods.net/mmsdrop/2.0/mmsource-latest-linux)\ncurl -sL -o /tmp/mm.tar.gz https://mms.alliedmods.net/mmsdrop/2.0/$MM\ntar -xzf /tmp/mm.tar.gz -C game/csgo\nrm -f /tmp/mm.tar.gz\nU=$(curl -s https://api.github.com/repos/roflmuffin/CounterStrikeSharp/releases/latest | grep -oE 'https://[^[:space:]]+with-runtime-linux[^[:space:]]*\\.zip' | head -1)\ncurl -sL -o /tmp/css.zip \"$U\"\nunzip -o /tmp/css.zip -d game/csgo\nrm -f /tmp/css.zip\n"
+      "text": "#!/bin/sh\nset -e\nneed=\"\"\nfor b in curl tar unzip; do command -v \"$b\" >/dev/null 2>&1 || need=\"$need $b\"; done\nif [ -n \"$need\" ]; then if command -v apt-get >/dev/null 2>&1; then apt-get update && apt-get install -y $need; elif command -v apk >/dev/null 2>&1; then apk add --no-cache $need; fi; fi\nMM=$(curl -s https://mms.alliedmods.net/mmsdrop/2.0/mmsource-latest-linux)\ncurl -sL -o /tmp/mm.tar.gz https://mms.alliedmods.net/mmsdrop/2.0/$MM\ntar -xzf /tmp/mm.tar.gz -C game/csgo\nrm -f /tmp/mm.tar.gz\nU=$(curl -s https://api.github.com/repos/roflmuffin/CounterStrikeSharp/releases/latest | grep -oE 'https://[^[:space:]]+with-runtime-linux[^[:space:]]*\\.zip' | head -1)\ncurl -sL -o /tmp/css.zip \"$U\"\nunzip -o /tmp/css.zip -d game/csgo\nrm -f /tmp/css.zip\nchown -R 1000:1000 game/csgo/addons\n"
     },
-    { "type": "command", "commands": [ "sh install-plugins.sh" ] },
+    {
+      "type": "command",
+      "commands": [
+        "sh install-plugins.sh"
+      ]
+    },
     {
       "type": "alterfile",
       "file": "game/csgo/gameinfo.gi",
@@ -119,25 +161,36 @@
     {
       "type": "writefile",
       "target": "cs2-start.sh",
-      "text": "#!/bin/sh\nexport LD_LIBRARY_PATH=\"$PWD/game/bin/linuxsteamrt64:$LD_LIBRARY_PATH\"\nif [ -f /home/steam/steamcmd/linux64/steamclient.so ]; then mkdir -p \"$HOME/.steam/sdk64\" \"$HOME/.steam/sdk32\"; ln -sf /home/steam/steamcmd/linux64/steamclient.so \"$HOME/.steam/sdk64/steamclient.so\"; ln -sf /home/steam/steamcmd/linux32/steamclient.so \"$HOME/.steam/sdk32/steamclient.so\"; fi\nMAPFLAG=\"+map ${map}\"\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then MAPFLAG=\"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then MAPFLAG=\"+host_workshop_map ${workshop_map}\"; fi\nGSLT=\"\"\n[ -n \"${gslt}\" ] && GSLT=\"+sv_setsteamaccount ${gslt}\"\nSVPW=\"\"\n[ -n \"${sv_password}\" ] && SVPW=\"+sv_password ${sv_password}\"\nRCON=\"\"\n[ -n \"${rcon_password}\" ] && RCON=\"+rcon_password ${rcon_password}\"\nexec ./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} $GSLT +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} $SVPW $RCON +bot_quota 0 $MAPFLAG ${extra_args}\n"
+      "text": "#!/bin/sh\nexport HOME=/home/steam\n[ \"$(stat -c %u \"$PWD\")\" = \"1000\" ] || chown -R 1000:1000 \"$PWD\"\nexport LD_LIBRARY_PATH=\"$PWD/game/bin/linuxsteamrt64:$LD_LIBRARY_PATH\"\nif [ -f /home/steam/steamcmd/linux64/steamclient.so ]; then mkdir -p /home/steam/.steam/sdk64 /home/steam/.steam/sdk32; ln -sf /home/steam/steamcmd/linux64/steamclient.so /home/steam/.steam/sdk64/steamclient.so; ln -sf /home/steam/steamcmd/linux32/steamclient.so /home/steam/.steam/sdk32/steamclient.so; chown -R 1000:1000 /home/steam/.steam; fi\nMAPFLAG=\"+map ${map}\"\nif [ \"${map_mode}\" = \"collection\" ] && [ -n \"${workshop_collection}\" ]; then MAPFLAG=\"+host_workshop_collection ${workshop_collection}\"; elif [ \"${map_mode}\" = \"workshop\" ] && [ -n \"${workshop_map}\" ]; then MAPFLAG=\"+host_workshop_map ${workshop_map}\"; fi\nGSLT=\"\"\n[ -n \"${gslt}\" ] && GSLT=\"+sv_setsteamaccount ${gslt}\"\nSVPW=\"\"\n[ -n \"${sv_password}\" ] && SVPW=\"+sv_password ${sv_password}\"\nRCON=\"\"\n[ -n \"${rcon_password}\" ] && RCON=\"+rcon_password ${rcon_password}\"\nexec setpriv --reuid=1000 --regid=1000 --init-groups ./game/bin/linuxsteamrt64/cs2 -dedicated -console -usercon -port ${port} -maxplayers_override ${maxplayers} $GSLT +game_type 0 +game_mode 1 +sv_visiblemaxplayers ${maxplayers} $SVPW $RCON +bot_quota 0 $MAPFLAG ${extra_args}\n"
     }
   ],
   "run": {
     "command": "sh cs2-start.sh",
     "stop": "quit",
-    "stdin": { "type": "stdin" },
+    "stdin": {
+      "type": "stdin"
+    },
     "autostart": false,
     "autorecover": false,
     "autorestart": false,
-    "environmentVars": { "LD_LIBRARY_PATH": "./game/bin/linuxsteamrt64" }
+    "environmentVars": {
+      "LD_LIBRARY_PATH": "./game/bin/linuxsteamrt64"
+    }
   },
-  "environment": { "type": "host" },
+  "environment": {
+    "type": "host"
+  },
   "supportedEnvironments": [
-    { "type": "host" },
+    {
+      "type": "host"
+    },
     {
       "type": "docker",
       "image": "cs2-pufferpanel:latest"
     }
   ],
-  "requirements": { "os": "linux", "arch": "amd64" }
+  "requirements": {
+    "os": "linux",
+    "arch": "amd64"
+  }
 }
